@@ -1,8 +1,12 @@
+import random
+
+
 class TicTacToeGame:
     def __init__(self, player1, player2):
         self.players = [player1, player2]
-        self.current_player = None
+        self.current_player = player1
         self.board = self.get_empty_board()
+        self.winner = None
 
     def get_empty_board(self):
         return [
@@ -12,61 +16,73 @@ class TicTacToeGame:
         ]
 
     def switch_player(self):
-        self.current_player = self.players[1] if self.current_player == self.players[0] else self.players[0]
+        if self.current_player == self.players[0]:
+            self.current_player = self.players[1]
+        else:
+            self.current_player = self.players[0]
 
     def get_player_input(self):
-        return self.current_player.get_move(self.board)
+        while True:
+            try:
+                row, col = map(int, input(f"{self.current_player.name}, please enter your move (row,col): ").split(','))
+                if 0 <= row < 3 and 0 <= col < 3:
+                    return row, col
+            except (ValueError, IndexError):
+                print("Invalid input. Please try again.")
 
     def play(self):
         while self.winner is None:
             self.print_board()
-        try:
-            row, col = self.get_player_input()
-            if self.current_player is not None:
+
+            try:
+                row, col = self.get_player_input()
                 if self.board[row][col] is None:
                     self.board[row][col] = self.current_player.symbol
                     self.winner = self.check_winner()
+
                     if self.winner is not None:
                         print(f"Player {self.current_player.symbol} wins!")
-                        break
+                        return
 
-                    else:
-                        self.current_player = self.switch_player()
+                    self.switch_player()
                 else:
                     print("That position is already occupied. Try again.")
-            else:
-                print("Invalid player. Try again.")
-        except ValueError:
-            continue
+            except ValueError:
+                pass
 
+            if None not in [cell for row in self.board for cell in row]:
+                self.winner = "Draw"
+                print("It's a tie!")
 
     def check_winner(self):
         for row in self.board:
             if len(set(row)) == 1 and row[0] is not None:
                 return row[0]
 
-        for i in range(len(self.board)):
-            column = [self.board[j][i] for j in range(len(self.board))]
+        for col in range(3):
+            column = [self.board[i][col] for i in range(3)]
             if len(set(column)) == 1 and column[0] is not None:
                 return column[0]
 
-        top_left_to_bottom_right = [self.board[i][i] for i in range(len(self.board))]
+        top_left_to_bottom_right = [self.board[i][i] for i in range(3)]
         if len(set(top_left_to_bottom_right)) == 1 and top_left_to_bottom_right[0] is not None:
             return top_left_to_bottom_right[0]
 
-        top_right_to_bottom_left = [self.board[i][len(self.board) - i - 1] for i in range(len(self.board))]
+        top_right_to_bottom_left = [self.board[i][3 - i - 1] for i in range(3)]
         if len(set(top_right_to_bottom_left)) == 1 and top_right_to_bottom_left[0] is not None:
             return top_right_to_bottom_left[0]
-
-        flat_board = [cell for row in self.board for cell in row]
-        if None not in flat_board:
+        
+        empty_positions = [(i, j) for i in range(3) for j in range(3) if self.board[i][j] is None]
+        if len(empty_positions) == 0:
             return "Draw"
 
+    
         return None
 
     def print_board(self):
         for row in self.board:
-            print(' '.join([cell if cell is not None else ' ' for cell in row]))
+            print('| ' + ' | '.join([str(cell) if cell is not None else ' ' for cell in row]) + ' |')
+
 
 class Player:
     def __init__(self, name, symbol):
@@ -76,24 +92,20 @@ class Player:
     def get_move(self, board):
         raise NotImplementedError("Subclasses must implement this method.")
 
+
 class HumanPlayer(Player):
     def get_move(self, board):
+        return self.get_player_input()
+
+    def get_player_input(self):
         while True:
             try:
-                move = input(f"{self.name}, please enter your move (row,col): ")
-                row, col = map(int, move.split(','))
+                row, col = map(int, input(f"{self.name}, please enter your move (row,col): ").split(','))
                 return row, col
             except (ValueError, IndexError):
                 print("Invalid input. Please try again.")
 
+
 class BotPlayer(Player):
     def get_move(self, board):
         empty_positions = [(i, j) for i in range(3) for j in range(3) if board[i][j] is None]
-        return random.choice(empty_positions)
-
-if __name__ == "__main__":
-    player1 = HumanPlayer("Player 1", "X")
-    player2 = BotPlayer("Bot", "O")
-
-    game = TicTacToeGame(player1, player2)
-    game.play()
