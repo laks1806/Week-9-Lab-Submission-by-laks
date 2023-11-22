@@ -35,13 +35,14 @@ class TicTacToeGameTest(unittest.TestCase):
 
 
 if __name__ == "__main__":
-
     test_result = unittest.main()
-    print("----------------------------------------------------------------")
+
+    print("==================================================================")
     print("Test Results:")
-    print("----------------------------------------------------------------")
-    print("Passed:", test_result.testsPassed)
-    print("Failed:", test_result.failures)
-    print("Errors:", test_result.errors)
+    print("==================================================================")
+    print(f"Passed: {test_result.testsPassed}")
+    print(f"Failed: {test_result.failures}")
+    print(f"Errors: {test_result.errors}")
 
-
+    for test_name, status in test_result.failures.items():
+        print(f"Test: {test_name}, Status: {status}")

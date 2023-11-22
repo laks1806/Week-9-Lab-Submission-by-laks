@@ -75,8 +75,6 @@ class TicTacToeGame:
         empty_positions = [(i, j) for i in range(3) for j in range(3) if self.board[i][j] is None]
         if len(empty_positions) == 0:
             return "Draw"
-
-    
         return None
 
     def print_board(self):
