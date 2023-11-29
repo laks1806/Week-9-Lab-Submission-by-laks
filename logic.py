@@ -71,10 +71,7 @@ class TicTacToeGame:
         top_right_to_bottom_left = [self.board[i][3 - i - 1] for i in range(3)]
         if len(set(top_right_to_bottom_left)) == 1 and top_right_to_bottom_left[0] is not None:
             return top_right_to_bottom_left[0]
-        
-        empty_positions = [(i, j) for i in range(3) for j in range(3) if self.board[i][j] is None]
-        if len(empty_positions) == 0:
-            return "Draw"
+
         return None
 
     def print_board(self):
@@ -105,5 +102,9 @@ class HumanPlayer(Player):
 
 
 class BotPlayer(Player):
+    def __init__(self, name, symbol):
+        super().__init__(name, symbol)
+        self.random_generator = random.Random()
+
     def get_move(self, board):
-        empty_positions = [(i, j) for i in range(3) for j in range(3) if board[i][j] is None]
+        empty_positions = [(i, j) for i in range(3)]
