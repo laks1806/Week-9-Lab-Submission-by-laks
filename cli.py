@@ -2,6 +2,12 @@ from logic import TicTacToeGame
 from logic import BotPlayer, HumanPlayer
 
 
+import logging
+import logging.handlers
+import csv
+import io
+
+
 def get_empty_board():
     """
     Returns an empty 3x3 board.
@@ -41,6 +47,9 @@ def print_board(board):
         print(' '.join([cell if cell is not None else ' ' for cell in row]))
 
 
+
+
+
 if __name__ == '__main__':
     # Create an instance of the TicTacToeGame class
     game = TicTacToeGame(HumanPlayer('Player 1', 'X'), HumanPlayer('Player 2', 'O'))
@@ -64,3 +73,10 @@ if __name__ == '__main__':
     # Print the final board and winner
     print_board(game.board)
     print(f"Player {game.winner} wins!")
+logger = logging.getLogger('tictactoe')
+logger.setLevel(logging.INFO)
+
+file_handler = logging.FileHandler('tictactoe.log')
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
